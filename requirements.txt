@@ -5,9 +5,10 @@ absl-py=0.7.1=py37_0
 appnope=0.1.0=py37_1000
 astor=0.7.1=py_0
 backcall=0.1.0=py_0
+beautifulsoup4=4.7.1=py37_1
 blas=1.0=mkl
 c-ares=1.15.0=h1de35cc_1001
-ca-certificates=2019.3.9=hecc5488_0
+ca-certificates=2019.1.23=0
 cctools=895=1
 certifi=2019.3.9=py37_0
 clang=4.0.1=1
@@ -50,7 +51,7 @@ mkl_random=1.0.2=py37h27c97d8_0
 ncurses=6.1=h0a44026_1
 numpy=1.16.3=py37hacdab7b_0
 numpy-base=1.16.3=py37h6575580_0
-openssl=1.1.1b=h01d97ff_2
+openssl=1.1.1=h1de35cc_0
 pandas=0.24.2=py37h0a44026_0
 parso=0.4.0=py_0
 pexpect=4.7.0=py37_0
@@ -71,6 +72,7 @@ scikit-learn=0.20.3=py37h27c97d8_0
 scipy=1.2.1=py37h1410ff5_0
 setuptools=41.0.1=py37_0
 six=1.12.0=py37_1000
+soupsieve=1.8=py37_0
 sqlite=3.28.0=ha441bb4_0
 tensorboard=1.13.1=py37_0
 tensorflow=1.13.1=py37_0
@@ -87,4 +89,3 @@ xz=5.2.4=h1de35cc_4
 yaml=0.1.7=h1de35cc_1001
 zeromq=4.3.1=h0a44026_1000
 zlib=1.2.11=h1de35cc_3
-
