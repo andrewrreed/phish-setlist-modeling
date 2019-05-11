@@ -1,5 +1,5 @@
 # phish-setlist-modeling
-A project to model the song choice of the band Phish during live shows
+A project to model the song choice of the band Phish during live shows.
 
 ### Create Conda environment
 
