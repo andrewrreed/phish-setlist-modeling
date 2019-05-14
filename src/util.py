@@ -104,6 +104,24 @@ def create_song_encodings(setlist_list):
     
     return song_to_idx, idx_to_song
 
+def encode_setlist_data(song_to_idx, setlist_list):
+    '''
+    Apply a song to index mapping to a list of all songs
+
+    Args:
+        song_to_idx (dict) - a mapping of song titles to numeric encodings
+        setlist_list (list) - the object returned from the preprocess_data utility function
+    
+    Returns:
+        encoded_setlist_list (list) - the input list with songs replaced by encodings
+        
+    '''
+
+    encoded_setlist_list = [mapping[song] for song in setlist_list]
+
+    return encoded_setlist_list
+
+
 
 
 # ------------------------- General Utilities -------------------------
