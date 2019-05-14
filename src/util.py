@@ -4,20 +4,21 @@ Utility functions for the phish-setlist-modeling package
 '''
 import os
 import pickle
+import pandas as pd
 from bs4 import BeautifulSoup
 
 # ------------------------- Processing Utilities -------------------------
 
 def preprocess_data(all_setlists_df):
     '''
-    Function to ingest, clean, and process a dataframe of Phish setlists into a "corpus"-like string of comma
-    separated songs and set identifiers.
+    Function to ingest, clean, and process a dataframe of Phish setlists into a "corpus"-like
+    list songs and set identifiers
 
     Args:
         all_setlists_df (dataframe) - a dataframe as returned by the "get_all_setlists()" method in the pyphishnet API wrapper (link below)
 
     Returns:
-        setlist_string (str) - a comma separated string to serve as a "corpus" of all Phish setlists in chronological order
+        setlist_list (list) - a list to serve as a "corpus" representation of all Phish setlists in chronological order, including identifiers
 
     NOTE - the pyphishnet API wrapper is accessible here: https://github.com/areed1242/pyphishnet.git 
 
@@ -68,31 +69,33 @@ def preprocess_data(all_setlists_df):
     
     ## ------- Create unique identifiers for sets/encores -------
     
+    # replace ids
     setlist_string = setlist_string.replace('Set 1', '<SET1>').replace('Set 2', '<SET2>').replace('Set 3', '<SET3>').replace('Set 4', '<SET4>').replace('Encore 2', '<ENCORE2>').replace('Encore', '<ENCORE>')
     
-    
-    return setlist_string
+    # split string data into list
+    setlist_list = setlist_string.split(', ')
 
-def create_song_encodings(setlist_string):
+    return setlist_list
+
+
+def create_song_encodings(setlist_list):
     '''
     Creates a numeric encoding for each song in the input string, as well as a reverse mapping for easy
     song lookups
 
     Args:
-        setlist_string (str) - the object returned from the preprocess_data utility function
+        setlist_list (list) - the object returned from the preprocess_data utility function
+
     Returns:
         song_to_idx (dict) - a mapping of song titles to numeric encodings
         idx_to_song (dict) - a mapping of numeric encodings to song titles
 
     '''
-    
-    # split string data into list
-    setlist_string_list = setlist_string.split(', ')
 
     # get list of all unique songs sorted alphabetically
-    unique_songs = sorted(set(setlist_string_list))
+    unique_songs = sorted(set(setlist_list))
 
-    print(f'Phish has {len(unique_songs)} unique and {len(setlist_string_list)} total songs/set identifiers in this corpus.')
+    print(f'Phish has {len(unique_songs)} unique and {len(setlist_list)} total songs/set identifiers in this corpus.')
     print()
     
     # create a mapping and reverse mapping for the encoded songs
