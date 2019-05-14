@@ -103,6 +103,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-
-mvp-setlist-modeling/*
-!mvp-setlist-modeling/.gitkeep
+# mvp modeling data
+**/mvp-setlist-modeling/*
+!**/mvp-setlist-modeling/.gitkeep
