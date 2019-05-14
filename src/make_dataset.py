@@ -1,8 +1,19 @@
 #!/usr/bin/python
+'''
+Build MVP Modeling Data
+
+The following script can be used to recreate the exact data used in MVP modeling.
+To recreate the data, run the the following command from the terminal with the 
+current working directory as 'phish-setlist-modeling/src':
+
+python make_dataset.py
+
+'''
+
 import numpy as np
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
-from .util import load_pickle_object, create_pickle_object, preprocess_data, create_song_encodings, encode_setlist_data, create_sequence_modeling_data
+from util import load_pickle_object, create_pickle_object, preprocess_data, create_song_encodings, encode_setlist_data, create_sequence_modeling_data
 
 # load raw setlist data
 all_setlists = load_pickle_object(r'../data/raw/extract-05032019/all_setlists.pickle')
