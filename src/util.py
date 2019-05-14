@@ -4,6 +4,7 @@ Utility functions for the phish-setlist-modeling package
 '''
 import os
 import pickle
+import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 
@@ -114,14 +115,47 @@ def encode_setlist_data(song_to_idx, setlist_list):
     
     Returns:
         encoded_setlist_list (list) - the input list with songs replaced by encodings
-        
+
     '''
 
-    encoded_setlist_list = [mapping[song] for song in setlist_list]
+    encoded_setlist_list = [song_to_idx[song] for song in setlist_list]
 
     return encoded_setlist_list
 
+def create_sequence_modeling_data(full_list, seq_length=100):
+    '''
+    Converts a list of items into a list consecutive sequences of length seq_length offset by one item, and
+    then splits each sequence into X and y pairs where X is the first seq_length-1 items in the sequence, 
+    and Y is the final item in the sequence 
 
+
+    Args:
+        full_list (list) - a list of data
+        seq_length (int) - the desired length of X data
+
+    Returns:
+        X_data (ndarray) - 2D array representing X data of shape = number of sequences by length of sequences
+        Y_data (ndarray) - 1D array representing y data for each sequence in X
+
+    '''
+
+    seq_length = seq_length
+    sequences = []
+
+    # create a list of sequences of length seq_length
+    for i in range(seq_length, len(full_list)):
+        # select the sequence of ints
+        seq = full_list[i-seq_length: i+1]
+        # append to list
+        sequences.append(seq)
+
+    # split sequences into X, y pairs where X is the first seq_length-1 
+    # items in the sequence, and Y is the final song in the sequence
+
+    sequences_array = np.array(sequences)
+    X_data, y_data = sequences_array[:,:-1], sequences_array[:,-1]
+
+    return X_data, y_data 
 
 
 # ------------------------- General Utilities -------------------------
