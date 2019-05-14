@@ -99,8 +99,11 @@ def create_song_encodings(setlist_list):
     print(f'Phish has {len(unique_songs)} unique and {len(setlist_list)} total songs/set identifiers in this corpus.')
     print()
     
-    # create a mapping and reverse mapping for the encoded songs
+    # create a mapping for the encoded songs
     song_to_idx = {song:index for index, song in enumerate(unique_songs)}
+    # add entry for <UNK> to handle new songs in the future
+    song_to_idx['<UNK>'] = max(song_to_idx.values()) + 1
+    # create reverse mapping
     idx_to_song = {v:k for k,v in song_to_idx.items()}
     
     return song_to_idx, idx_to_song
