@@ -6,3 +6,4 @@ __status__ = "dev"
 """
 
 from . import util
+from . import make_dataset
