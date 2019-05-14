@@ -42,7 +42,7 @@ def create_pickle_object(obj, pickle_name, file_path='./pickle_objects/'):
     pickle.dump(obj, pickle_out)
     pickle_out.close()
 
-    print(f'Successfully pickled {obj} to {os.path.abspath(full_path)}')
+    print(f'Successfully pickled {pickle_name} to {os.path.abspath(full_path)}')
 
     return None
 
@@ -69,8 +69,8 @@ def load_pickle_object(file_path):
         raise NameError('The file or path provided does not exist.')
 
     # verify .pickle file as target
-    if file_path[-7:] != '.pickle':
-        raise ValueError('The file must end with a .pickle suffix.')
+    if not (file_path[-7:] == '.pickle' or file_path[-4:] == '.pkl'):
+        raise ValueError('The file must end with a .pickle or .pkl suffix.')
 
     pickle_in = open(file_path, 'rb')
     pickle_obj = pickle.load(pickle_in)
