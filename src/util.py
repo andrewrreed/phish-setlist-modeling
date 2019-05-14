@@ -1,12 +1,79 @@
 '''
-Utility functions for the pyphish package
+Utility functions for the phish-setlist-modeling package
 
 '''
 import os
 import pickle
 from bs4 import BeautifulSoup
 
+# ------------------------- Processing Utilities -------------------------
 
+def preprocess_data(all_setlists_df):
+    '''
+    Function to ingest, clean, and process a dataframe of Phish setlists into a "corpus"-like string of comma
+    separated songs and set identifiers.
+
+    Args:
+        all_setlists_df (dataframe) - a dataframe as returned by the "get_all_setlists()" method in the pyphishnet API wrapper (link below)
+
+    Returns:
+        setlist_string (str) - a comma separated string to serve as a "corpus" of all Phish setlists in chronological order
+
+    NOTE - the pyphishnet API wrapper is accessible here: https://github.com/areed1242/pyphishnet.git 
+
+    '''
+    
+    ## ------- Cleanse setlists -------
+    
+    # filter to only Phish setlist data
+    all_setlists = all_setlists_df[all_setlists_df.artistid == 1]
+    # reset index
+    all_setlists.reset_index(drop=True, inplace=True)
+    
+    # create a new dataframe that has ONLY complete datasets (i.e. has Set 1, Set 2, and Encore)
+    complete_setlists = pd.DataFrame()
+
+    for i, row in all_setlists.iterrows():
+        # get setlist as list
+        setlist = row.setlistdata_clean.split(', ')
+        # Check for presence of Set 1, Set 2, and Encore
+        if 'Set 1' and 'Set 2' and 'Encore' in setlist:
+            complete_setlists = complete_setlists.append(row)
+    
+    # reset index
+    complete_setlists.reset_index(drop=True, inplace=True)
+    
+    print(f'{complete_setlists.shape[0]} of the {all_setlists.shape[0]} setlists have a Set 1, Set 2, and an Encore section')
+    print()
+    
+    
+    ## ------- Build a full "corpus" of songs -------
+
+    setlist_list = []
+
+    for i, row in complete_setlists.iterrows():
+
+        # add a ', ' unless its the last record
+        if i == complete_setlists.shape[0]-1:
+            setlist = row.setlistdata_clean
+        else:
+            setlist = row.setlistdata_clean + ', '
+
+        # append to full list
+        setlist_list.append(setlist)
+
+    # join to one long string
+    setlist_string = ''.join(setlist_list)
+    
+    
+    ## ------- Create unique identifiers for sets/encores -------
+    
+    setlist_string = setlist_string.replace('Set 1', '<SET1>').replace('Set 2', '<SET2>').replace('Set 3', '<SET3>').replace('Set 4', '<SET4>').replace('Encore 2', '<ENCORE2>').replace('Encore', '<ENCORE>')
+    
+    
+    return setlist_string
+
+# ------------------------- General Utilities -------------------------
 
 def create_pickle_object(obj, pickle_name, file_path='./pickle_objects/'):
     """Pickle a Python object and save to local directory
