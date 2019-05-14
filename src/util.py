@@ -73,6 +73,36 @@ def preprocess_data(all_setlists_df):
     
     return setlist_string
 
+def create_song_encodings(setlist_string):
+    '''
+    Creates a numeric encoding for each song in the input string, as well as a reverse mapping for easy
+    song lookups
+
+    Args:
+        setlist_string (str) - the object returned from the preprocess_data utility function
+    Returns:
+        song_to_idx (dict) - a mapping of song titles to numeric encodings
+        idx_to_song (dict) - a mapping of numeric encodings to song titles
+
+    '''
+    
+    # split string data into list
+    setlist_string_list = setlist_string.split(', ')
+
+    # get list of all unique songs sorted alphabetically
+    unique_songs = sorted(set(setlist_string_list))
+
+    print(f'Phish has {len(unique_songs)} unique and {len(setlist_string_list)} total songs/set identifiers in this corpus.')
+    print()
+    
+    # create a mapping and reverse mapping for the encoded songs
+    song_to_idx = {song:index for index, song in enumerate(unique_songs)}
+    idx_to_song = {v:k for k,v in song_to_idx.items()}
+    
+    return song_to_idx, idx_to_song
+
+
+
 # ------------------------- General Utilities -------------------------
 
 def create_pickle_object(obj, pickle_name, file_path='./pickle_objects/'):
