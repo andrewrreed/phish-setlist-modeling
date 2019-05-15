@@ -24,7 +24,7 @@ from src.util import load_pickle_object, create_pickle_object, preprocess_data, 
 
 
 # load raw setlist data
-all_setlists = load_pickle_object(r'../data/raw/extract-05032019/all_setlists.pickle')
+all_setlists = load_pickle_object(r'../data/raw/extract-05032019/all_setlists.pkl')
 
 # process and clean all setlists
 setlist_list = preprocess_data(all_setlists)
@@ -42,14 +42,14 @@ X_data, y_data = create_sequence_modeling_data(encoded_setlist_list)
 X_train, X_test, y_train, y_test = train_test_split(X_data, y_data, test_size=0.1, random_state=2)
 
 # pickle the song encoding mappings
-create_pickle_object(obj= song_to_idx, pickle_name='song_to_idx.pickle', file_path='../data/processed/mvp-setlist-modeling/')
-create_pickle_object(obj= idx_to_song, pickle_name='idx_to_song.pickle', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= song_to_idx, pickle_name='song_to_idx.pkl', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= idx_to_song, pickle_name='idx_to_song.pkl', file_path='../data/processed/mvp-setlist-modeling/')
 
 # pickle training data
-create_pickle_object(obj= X_train, pickle_name='X_train.pickle', file_path='../data/processed/mvp-setlist-modeling/')
-create_pickle_object(obj= X_test, pickle_name='X_test.pickle', file_path='../data/processed/mvp-setlist-modeling/')
-create_pickle_object(obj= y_train, pickle_name='y_train.pickle', file_path='../data/processed/mvp-setlist-modeling/')
-create_pickle_object(obj= y_test, pickle_name='y_test.pickle', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= X_train, pickle_name='X_train.pkl', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= X_test, pickle_name='X_test.pkl', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= y_train, pickle_name='y_train.pkl', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= y_test, pickle_name='y_test.pkl', file_path='../data/processed/mvp-setlist-modeling/')
 
 # one-hot encode training data
 num_classes = len(song_to_idx)
@@ -60,7 +60,7 @@ y_test_hot = to_categorical(y_test, num_classes=num_classes)
 
 # pickle one-hot encoded training data
 ## NOTE - one-hot encoded X datasets are too large to pickle AND are not needed for modeling
-#create_pickle_object(obj= X_train_hot, pickle_name='X_train_hot.pickle', file_path='../data/processed/mvp-setlist-modeling/')
-#create_pickle_object(obj= X_test_hot, pickle_name='X_test_hot.pickle', file_path='../data/processed/mvp-setlist-modeling/')
-create_pickle_object(obj= y_train_hot, pickle_name='y_train_hot.pickle', file_path='../data/processed/mvp-setlist-modeling/')
-create_pickle_object(obj= y_test_hot, pickle_name='y_test_hot.pickle', file_path='../data/processed/mvp-setlist-modeling/')
+#create_pickle_object(obj= X_train_hot, pickle_name='X_train_hot.pkl', file_path='../data/processed/mvp-setlist-modeling/')
+#create_pickle_object(obj= X_test_hot, pickle_name='X_test_hot.pkl', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= y_train_hot, pickle_name='y_train_hot.pkl', file_path='../data/processed/mvp-setlist-modeling/')
+create_pickle_object(obj= y_test_hot, pickle_name='y_test_hot.pkl', file_path='../data/processed/mvp-setlist-modeling/')
