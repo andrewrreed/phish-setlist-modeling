@@ -163,7 +163,7 @@ def create_sequence_modeling_data(full_list, seq_length=100):
 
 # ------------------------- General Utilities -------------------------
 
-def create_pickle_object(obj, pickle_name, file_path='./pickle_objects/'):
+def create_pickle_object(obj, pickle_name, file_path='./pkl_objects/'):
     """Pickle a Python object and save to local directory
 
     Parameters
@@ -171,7 +171,7 @@ def create_pickle_object(obj, pickle_name, file_path='./pickle_objects/'):
     obj : Python object
         The Python object to pickle
     pickle_name : string
-        The file name of that will be saved with the file; must end with '.pickle' suffix
+        The file name of that will be saved with the file; must end with '.pkl' suffix
     file_path : string
         The path (absolute or relative) to the target directory where the pickle file will be stored
     """
@@ -180,8 +180,8 @@ def create_pickle_object(obj, pickle_name, file_path='./pickle_objects/'):
     if isinstance(pickle_name, str) and isinstance(file_path, str):
 
         # verify .pickle suffix
-        if pickle_name[-7:] != '.pickle':
-            raise ValueError('The pickle_name argument must end with a .pickle suffix.')
+        if pickle_name[-4:] != '.pkl':
+            raise ValueError('The pickle_name argument must end with a .pkl suffix.')
 
         # build full path
         full_path = file_path + pickle_name
