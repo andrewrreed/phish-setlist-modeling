@@ -20,7 +20,8 @@ module_path = os.path.abspath(os.path.join('../'))
 if module_path not in sys.path:
     sys.path.append(module_path)
 
-from src.util import load_pickle_object, create_pickle_object, preprocess_data, create_song_encodings, encode_setlist_data, create_sequence_modeling_data
+from src.util import load_pickle_object, create_pickle_object
+from src.process import preprocess_data, create_song_encodings, encode_setlist_data, create_sequence_modeling_data
 
 
 # load raw setlist data
