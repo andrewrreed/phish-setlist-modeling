@@ -9,11 +9,19 @@ current working directory as 'phish-setlist-modeling/scriptsw':
 python make_dataset.py
 
 '''
-
+import os
+import sys
 import numpy as np
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
+
+# check/add module to path
+module_path = os.path.abspath(os.path.join('../'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+
 from src.util import load_pickle_object, create_pickle_object, preprocess_data, create_song_encodings, encode_setlist_data, create_sequence_modeling_data
+
 
 # load raw setlist data
 all_setlists = load_pickle_object(r'../data/raw/extract-05032019/all_setlists.pickle')
