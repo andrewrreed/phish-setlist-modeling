@@ -59,6 +59,10 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size):
         epochs - number of epochs to train for
         batch-size - size of batches to be computed in each forward/backward propogation
     
+    Returns:
+        model_history (keras.callbacks.History) - object storing relevant model history
+
+
     '''
     
     # extract model name
@@ -94,6 +98,38 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size):
 
     # clear session and remove data vars
     keras.backend.clear_session()
-    del X_train, X_test, y_train_hot, y_test_hot
     
     return model_history
+
+def nn_arch_1(seq_length, num_classes, lstm_units):
+    '''
+    Phish Setlist Modeling: Achitecture 1
+    
+    A baseline, Recurrent Neural Network model consisting of:
+        Embedding Layer - to create a vector space representation of each song Phish has played
+        LSTM Layer - this recurrent layer allows the network to learn sequential patterns over time (variable number of units)
+        Fully Connected Layer - a layer to digest the LSTM output (variable dropout)
+        Softmax Output - an output layer that represents one unit for each song, creating a multiclass classfication task
+        
+    Args:
+        seq_length (int) - the input sequence lengths being fed to the model
+        num_classes (int) - the number of unique songs to be learned in the embedding layer
+        lstm_units (int) - number of units in the LSTM layer
+    
+    Returns:
+        model (keras.engine) - a compiled keras model
+    
+    '''
+    
+    base_name = 'nn_arch_1'
+    
+    model = Sequential()
+    model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
+    model.add(LSTM(units=lstm_units))
+    model.add(Dense(units=lstm_units, activation='relu'))
+    model.add(Dense(units=num_classes, activation='softmax'))
+    
+    model.name = f'{base_name}-{seq_length}-seqlen-{lstm_units}-lstmunits'
+    
+    return model
+    
