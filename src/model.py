@@ -45,3 +45,55 @@ def load_training_data(seq_len):
     
     return X_train, X_test, y_train_hot, y_test_hot, idx_to_song
 
+
+def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size):
+    '''
+    Function to train a Keras neural network model provided a compiled architecture and data inputs.
+    
+    Args:
+        nn_arch (keras.engine) - a compiled keras model
+        X_train - X features for training
+        y_train - y features for training
+        X_test - X features for evaluation
+        y_test - y features for evaluation
+        epochs - number of epochs to train for
+        batch-size - size of batches to be computed in each forward/backward propogation
+    
+    '''
+    
+    # extract model name
+    NAME = nn_arch.name
+    
+    # define callbacks for Tensorboard logs and ModelCheckpoints
+    callbacks = [TensorBoard(log_dir = f'../logs/{NAME}',
+                            histogram_freq=1,
+                            embeddings_freq=0,
+                            embeddings_data=X_train
+                            ),
+                 ModelCheckpoint(
+                            filepath=f'../models/mvp-setlist-modeling/model.{NAME}.hdf5',
+                            monitor='val_acc',
+                            save_best_only=True,
+                            mode='max',
+                            verbose=1
+                            )]
+    
+    # compile model
+    nn_arch.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+
+    # fit model
+    with tf.device('/gpu:0'):
+        model_history = nn_arch.fit(x=X_train,
+                                    y=y_train,
+                                    validation_data=(X_test, y_test),
+                                    batch_size=batch_size,
+                                    epochs=epochs,
+                                    callbacks=callbacks)
+
+    # clear session and remove data vars
+    keras.backend.clear_session()
+    del X_train, X_test, y_train_hot, y_test_hot
+    
+    return model_history
