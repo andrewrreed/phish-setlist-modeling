@@ -110,3 +110,6 @@ venv.bak/
 # tensorboard logs
 logs/*
 arch_logs/*
+
+# .DS_store
+*.DS_Store
