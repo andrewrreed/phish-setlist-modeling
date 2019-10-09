@@ -105,11 +105,16 @@ venv.bak/
 
 # mvp modeling data
 **/mvp-setlist-modeling/*
+**/mvp-setlist-modeling2/*
 !**/mvp-setlist-modeling/.gitkeep
 
 # tensorboard logs
 logs/*
 arch_logs/*
+logs2/*
+
+# raw data
+raw/*
 
 # .DS_store
 *.DS_Store

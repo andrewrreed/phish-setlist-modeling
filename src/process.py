@@ -6,6 +6,7 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
+import random
 from bs4 import BeautifulSoup
 
 # ------------------------- Processing Utilities -------------------------
@@ -37,7 +38,7 @@ def preprocess_data(all_setlists_df):
 
     for i, row in all_setlists.iterrows():
         # get setlist as list
-        setlist = row.setlistdata_clean.split(', ')
+        setlist = row.setlistdata_clean.split('|')
         # Check for presence of Set 1, Set 2, and Encore
         if 'Set 1' and 'Set 2' and 'Encore' in setlist:
             complete_setlists = complete_setlists.append(row)
@@ -59,7 +60,7 @@ def preprocess_data(all_setlists_df):
         if i == complete_setlists.shape[0]-1:
             setlist = row.setlistdata_clean
         else:
-            setlist = row.setlistdata_clean + ', '
+            setlist = row.setlistdata_clean + '|'
 
         # append to full list
         setlist_list.append(setlist)
@@ -74,7 +75,7 @@ def preprocess_data(all_setlists_df):
     setlist_string = setlist_string.replace('Set 1', '<SET1>').replace('Set 2', '<SET2>').replace('Set 3', '<SET3>').replace('Set 4', '<SET4>').replace('Encore 2', '<ENCORE2>').replace('Encore', '<ENCORE>')
     
     # split string data into list
-    setlist_list = setlist_string.split(', ')
+    setlist_list = setlist_string.split('|')
 
     return setlist_list
 
@@ -110,7 +111,7 @@ def create_song_encodings(setlist_list):
 
 def encode_setlist_data(song_to_idx, setlist_list):
     '''
-    Apply a song to index mapping to a list of all songs
+    Apply a song to index mapping to a list of all songs, but first randomly insert some unknown's for the model to learn from
 
     Args:
         song_to_idx (dict) - a mapping of song titles to numeric encodings
@@ -121,6 +122,25 @@ def encode_setlist_data(song_to_idx, setlist_list):
 
     '''
 
+    # randomly insert the number of unique songs as unknowns - the model won't know each song one time...
+    used_idx = []
+
+    while len(used_idx) < len(song_to_idx):
+        
+        # pick a random song
+        new_idx = random.randrange(len(setlist_list))
+        
+        if new_idx not in used_idx:
+            
+            if setlist_list[new_idx] not in ['<ENCORE>', '<ENCORE2>', '<SET1>', '<SET2>', '<SET3>', '<SET4>']:
+
+                # overwrite it with <UNK>
+                setlist_list[new_idx] = '<UNK>'
+        
+        # save used idx
+        used_idx.append(new_idx)
+
+    # encode the setlist
     encoded_setlist_list = [song_to_idx[song] for song in setlist_list]
 
     return encoded_setlist_list

@@ -15,6 +15,7 @@ import numpy as np
 import keras.backend as K
 from keras.utils import to_categorical
 from keras.models import Sequential
+from keras.regularizers import l2
 from keras.layers import Dense, LSTM, Embedding, Dropout
 from keras.callbacks import TensorBoard, ModelCheckpoint, Callback
 import matplotlib.pyplot as plt
@@ -40,11 +41,11 @@ def load_training_data(seq_len):
     
     '''
     
-    X_train = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling/seqlen-{seq_len}/X_train.pkl')
-    X_test = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling/seqlen-{seq_len}/X_test.pkl')
-    y_train_hot = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling/seqlen-{seq_len}/y_train_hot.pkl')
-    y_test_hot = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling/seqlen-{seq_len}/y_test_hot.pkl')
-    idx_to_song = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling/seqlen-{seq_len}/idx_to_song.pkl')
+    X_train = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling2/seqlen-{seq_len}/X_train.pkl')
+    X_test = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling2/seqlen-{seq_len}/X_test.pkl')
+    y_train_hot = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling2/seqlen-{seq_len}/y_train_hot.pkl')
+    y_test_hot = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling2/seqlen-{seq_len}/y_test_hot.pkl')
+    idx_to_song = load_pickle_object(file_path=f'../data/processed/mvp-setlist-modeling2/seqlen-{seq_len}/idx_to_song.pkl')
     
     return X_train, X_test, y_train_hot, y_test_hot, idx_to_song
 
@@ -121,22 +122,22 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size, lr_f
     NAME = nn_arch.name
 
     # define callbacks for Tensorboard logs and ModelCheckpoints
-    tensorboard = TensorBoard(log_dir = f'../logs/{NAME}',
+    tensorboard = TensorBoard(log_dir = f'../logs2/{NAME}4',
                             histogram_freq=1,
                             embeddings_freq=0,
                             embeddings_data=X_train
                             )
     checkpoint = ModelCheckpoint(
-                            filepath=f'../models/mvp-setlist-modeling/model.{NAME}.hdf5',
+                            filepath=f'../models/mvp-setlist-modeling2/model.{NAME}4.hdf5',
                             monitor='val_acc',
                             save_best_only=True,
                             mode='max',
                             verbose=1
                             )
-    lrn_finder = LRFinder(min_lr=0.00075,
-                            max_lr=0.05,
+    lrn_finder = LRFinder(min_lr=0.00001,
+                            max_lr=0.1,
                             steps_per_epoch=np.ceil(X_train.shape[0]/batch_size),
-                            epochs=3)
+                            epochs=5)
 
     # build callbacks list
     callbacks = [tensorboard, checkpoint]
@@ -144,8 +145,11 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size, lr_f
     if lr_finder == True:
         callbacks.append(lrn_finder)
     
+    # build optimizer object
+    lr_obj = keras.optimizers.adam(lr=0.002)
+
     # compile model
-    nn_arch.compile(optimizer='adam',
+    nn_arch.compile(optimizer=lr_obj,
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 
@@ -165,13 +169,46 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size, lr_f
 
 # ------------------------- Architecture Types -------------------------
 
-def nn_arch_1(seq_length, num_classes, lstm_units):
-    '''
-    Phish Setlist Modeling: Achitecture 1 (Baseline)
+# def nn_arch_1(seq_length, num_classes, lstm_units):
+#     '''
+#     Phish Setlist Modeling: Achitecture 1 (Baseline)
     
-    A baseline, Recurrent Neural Network model consisting of:
+#     A baseline, Recurrent Neural Network model consisting of:
+#         Embedding Layer - to create a vector space representation of each song Phish has played
+#         LSTM Layer - this recurrent layer allows the network to learn sequential patterns over time (variable number of units)
+#         Fully Connected Layer - a layer to digest the LSTM output
+#         Softmax Output - an output layer that represents one unit for each song, creating a multiclass classfication task
+        
+#     Args:
+#         seq_length (int) - the input sequence lengths being fed to the model
+#         num_classes (int) - the number of unique songs to be learned in the embedding layer
+#         lstm_units (int) - number of units in the LSTM layer
+    
+#     Returns:
+#         model (keras.engine) - a compiled keras model
+    
+#     '''
+    
+#     base_name = 'nn_arch_1'
+    
+#     model = Sequential()
+#     model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
+#     model.add(LSTM(units=lstm_units))
+#     model.add(Dense(units=100, activation='relu'))
+#     model.add(Dense(units=num_classes, activation='softmax'))
+    
+#     model.name = f'{base_name}-{seq_length}-seqlen-{lstm_units}-lstmunits'
+    
+#     return model
+    
+def nn_arch_1(seq_length, num_classes, lstm_units, dropout_before, dropout_after):
+    '''
+    Phish Setlist Modeling: Achitecture 1
+    
+    An improved Recurrent Neural Network model that introduces dropout after the LSTM layer:
         Embedding Layer - to create a vector space representation of each song Phish has played
         LSTM Layer - this recurrent layer allows the network to learn sequential patterns over time (variable number of units)
+        Dropout Layer - this layer will help regularize our network (variable dropout)
         Fully Connected Layer - a layer to digest the LSTM output
         Softmax Output - an output layer that represents one unit for each song, creating a multiclass classfication task
         
@@ -179,6 +216,8 @@ def nn_arch_1(seq_length, num_classes, lstm_units):
         seq_length (int) - the input sequence lengths being fed to the model
         num_classes (int) - the number of unique songs to be learned in the embedding layer
         lstm_units (int) - number of units in the LSTM layer
+        dropout_before (float) - percent of inputs before LSTM to be dropped (set to zero)
+        dropout_after (float) - percent of inputs after LSTM to be dropped (set to zero)
     
     Returns:
         model (keras.engine) - a compiled keras model
@@ -189,20 +228,23 @@ def nn_arch_1(seq_length, num_classes, lstm_units):
     
     model = Sequential()
     model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
-    model.add(LSTM(units=lstm_units))
+    model.add(Dropout(rate=dropout_before, seed=2))
+    model.add(LSTM(units=lstm_units, kernel_regularizer=l2(0.01), recurrent_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+    model.add(Dropout(rate=dropout_after, seed=2))
     model.add(Dense(units=100, activation='relu'))
     model.add(Dense(units=num_classes, activation='softmax'))
     
-    model.name = f'{base_name}-{seq_length}-seqlen-{lstm_units}-lstmunits'
+    model.name = f'{base_name}-{seq_length}-seqlen-{lstm_units}-lstmunits-{dropout_before}-b_dropout-{dropout_after}-a_dropout'
     
     return model
-    
+
 def nn_arch_2(seq_length, num_classes, lstm_units, dropout_before, dropout_after):
     '''
-    Phish Setlist Modeling: Achitecture 2 (Dropout)
+    Phish Setlist Modeling: Achitecture 2 (Two LSTMs)
     
-    An improved Recurrent Neural Network model that introduces dropout after the LSTM layer:
+    An improved Recurrent Neural Network model that introduces two LSTM layers with dropout:
         Embedding Layer - to create a vector space representation of each song Phish has played
+        LSTM Layer - this recurrent layer allows the network to learn sequential patterns over time (variable number of units)
         LSTM Layer - this recurrent layer allows the network to learn sequential patterns over time (variable number of units)
         Dropout Layer - this layer will help regularize our network (variable dropout)
         Fully Connected Layer - a layer to digest the LSTM output
@@ -225,45 +267,8 @@ def nn_arch_2(seq_length, num_classes, lstm_units, dropout_before, dropout_after
     model = Sequential()
     model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
     model.add(Dropout(rate=dropout_before, seed=2))
-    model.add(LSTM(units=lstm_units))
-    model.add(Dropout(rate=dropout_after, seed=2))
-    model.add(Dense(units=100, activation='relu'))
-    model.add(Dense(units=num_classes, activation='softmax'))
-    
-    model.name = f'{base_name}-{seq_length}-seqlen-{lstm_units}-lstmunits-{dropout_before}-b_dropout-{dropout_after}-a_dropout'
-    
-    return model
-
-def nn_arch_3(seq_length, num_classes, lstm_units, dropout_before, dropout_after):
-    '''
-    Phish Setlist Modeling: Achitecture 3 (Two LSTMs)
-    
-    An improved Recurrent Neural Network model that introduces two LSTM layers with dropout:
-        Embedding Layer - to create a vector space representation of each song Phish has played
-        LSTM Layer - this recurrent layer allows the network to learn sequential patterns over time (variable number of units)
-        LSTM Layer - this recurrent layer allows the network to learn sequential patterns over time (variable number of units)
-        Dropout Layer - this layer will help regularize our network (variable dropout)
-        Fully Connected Layer - a layer to digest the LSTM output
-        Softmax Output - an output layer that represents one unit for each song, creating a multiclass classfication task
-        
-    Args:
-        seq_length (int) - the input sequence lengths being fed to the model
-        num_classes (int) - the number of unique songs to be learned in the embedding layer
-        lstm_units (int) - number of units in the LSTM layer
-        dropout_before (float) - percent of inputs before LSTM to be dropped (set to zero)
-        dropout_after (float) - percent of inputs after LSTM to be dropped (set to zero)
-    
-    Returns:
-        model (keras.engine) - a compiled keras model
-    
-    '''
-    
-    base_name = 'nn_arch_3'
-    
-    model = Sequential()
-    model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
-    model.add(Dropout(rate=dropout_before, seed=2))
     model.add(LSTM(units=lstm_units, return_sequences=True))
+    model.add(Dropout(rate=dropout_after, seed=2))
     model.add(LSTM(units=lstm_units))
     model.add(Dropout(rate=dropout_after, seed=2))
     model.add(Dense(units=100, activation='relu'))
@@ -359,3 +364,4 @@ class LRFinder(Callback):
         plt.xlabel('Learning rate')
         plt.ylabel('Loss')
         plt.show()
+
