@@ -122,13 +122,13 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size, lr_f
     NAME = nn_arch.name
 
     # define callbacks for Tensorboard logs and ModelCheckpoints
-    tensorboard = TensorBoard(log_dir = f'../logs2/{NAME}4',
+    tensorboard = TensorBoard(log_dir = f'../logs2/{NAME}6',
                             histogram_freq=1,
                             embeddings_freq=0,
                             embeddings_data=X_train
                             )
     checkpoint = ModelCheckpoint(
-                            filepath=f'../models/mvp-setlist-modeling2/model.{NAME}4.hdf5',
+                            filepath=f'../models/mvp-setlist-modeling2/model.{NAME}6.hdf5',
                             monitor='val_acc',
                             save_best_only=True,
                             mode='max',
@@ -146,7 +146,7 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size, lr_f
         callbacks.append(lrn_finder)
     
     # build optimizer object
-    lr_obj = keras.optimizers.adam(lr=0.002)
+    lr_obj = keras.optimizers.adam(lr=0.005)
 
     # compile model
     nn_arch.compile(optimizer=lr_obj,
@@ -229,7 +229,7 @@ def nn_arch_1(seq_length, num_classes, lstm_units, dropout_before, dropout_after
     model = Sequential()
     model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
     model.add(Dropout(rate=dropout_before, seed=2))
-    model.add(LSTM(units=lstm_units, kernel_regularizer=l2(0.01), recurrent_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+    model.add(LSTM(units=lstm_units, kernel_regularizer=l2(0), recurrent_regularizer=l2(0), bias_regularizer=l2(0)))
     model.add(Dropout(rate=dropout_after, seed=2))
     model.add(Dense(units=100, activation='relu'))
     model.add(Dense(units=num_classes, activation='softmax'))
@@ -267,9 +267,9 @@ def nn_arch_2(seq_length, num_classes, lstm_units, dropout_before, dropout_after
     model = Sequential()
     model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
     model.add(Dropout(rate=dropout_before, seed=2))
-    model.add(LSTM(units=lstm_units, return_sequences=True))
+    model.add(LSTM(units=lstm_units, return_sequences=True, kernel_regularizer=l2(0), recurrent_regularizer=l2(0), bias_regularizer=l2(0)))
     model.add(Dropout(rate=dropout_after, seed=2))
-    model.add(LSTM(units=lstm_units))
+    model.add(LSTM(units=lstm_units, kernel_regularizer=l2(0), recurrent_regularizer=l2(0), bias_regularizer=l2(0)))
     model.add(Dropout(rate=dropout_after, seed=2))
     model.add(Dense(units=100, activation='relu'))
     model.add(Dense(units=num_classes, activation='softmax'))
