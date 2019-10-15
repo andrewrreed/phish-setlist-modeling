@@ -106,12 +106,17 @@ venv.bak/
 # mvp modeling data
 **/mvp-setlist-modeling/*
 **/mvp-setlist-modeling2/*
+**/mvp-setlist-modeling3/*
+**/mvp-setlist-modeling4/*
+**/reporting/*
 !**/mvp-setlist-modeling/.gitkeep
 
 # tensorboard logs
 logs/*
 arch_logs/*
 logs2/*
+logs3/*
+logs4*
 
 # raw data
 raw/*
