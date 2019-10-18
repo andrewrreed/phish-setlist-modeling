@@ -122,13 +122,21 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size, lr_f
     NAME = nn_arch.name
 
     # define callbacks for Tensorboard logs and ModelCheckpoints
+<<<<<<< HEAD
     tensorboard = TensorBoard(log_dir = f'../logs4/{NAME}_w2v',
+=======
+    tensorboard = TensorBoard(log_dir = f'../logs2/{NAME}6',
+>>>>>>> d0876b2f7ff329d5d804cdedae90c21406c07a9b
                             histogram_freq=1,
                             embeddings_freq=0,
                             embeddings_data=X_train
                             )
     checkpoint = ModelCheckpoint(
+<<<<<<< HEAD
                             filepath=f'../models/mvp-setlist-modeling4/model.{NAME}_w2v.hdf5',
+=======
+                            filepath=f'../models/mvp-setlist-modeling2/model.{NAME}6.hdf5',
+>>>>>>> d0876b2f7ff329d5d804cdedae90c21406c07a9b
                             monitor='val_acc',
                             save_best_only=True,
                             mode='max',
@@ -146,7 +154,11 @@ def nn_model(nn_arch, X_train, y_train, X_test, y_test, epochs, batch_size, lr_f
         callbacks.append(lrn_finder)
 
     # build optimizer object
+<<<<<<< HEAD
     lr_obj = keras.optimizers.adam(lr=0.01) #0.004
+=======
+    lr_obj = keras.optimizers.adam(lr=0.005)
+>>>>>>> d0876b2f7ff329d5d804cdedae90c21406c07a9b
 
     # compile model
     nn_arch.compile(optimizer=lr_obj,
@@ -268,6 +280,7 @@ def nn_arch_2(seq_length, num_classes, lstm_units, dropout_before, dropout_after
     model.add(Embedding(input_dim=num_classes, output_dim=50, input_length=seq_length, name='embed'))
     model.add(Dropout(rate=dropout_before, seed=2))
     model.add(LSTM(units=lstm_units, return_sequences=True, kernel_regularizer=l2(0), recurrent_regularizer=l2(0), bias_regularizer=l2(0)))
+<<<<<<< HEAD
     model.add(Dropout(rate=dropout_after, seed=2))
     model.add(LSTM(units=lstm_units, kernel_regularizer=l2(0), recurrent_regularizer=l2(0), bias_regularizer=l2(0)))
     model.add(Dropout(rate=dropout_after, seed=2))
@@ -314,6 +327,9 @@ def nn_arch_3(seq_length, num_classes, lstm_units, dropout_before, dropout_after
                         name='embed',
                         trainable=True))
     model.add(Dropout(rate=dropout_before, seed=2))
+=======
+    model.add(Dropout(rate=dropout_after, seed=2))
+>>>>>>> d0876b2f7ff329d5d804cdedae90c21406c07a9b
     model.add(LSTM(units=lstm_units, kernel_regularizer=l2(0), recurrent_regularizer=l2(0), bias_regularizer=l2(0)))
     model.add(Dropout(rate=dropout_after, seed=2))
     model.add(Dense(units=100, activation='relu'))
