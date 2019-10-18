@@ -70,7 +70,6 @@ tk=8.6.8
 tornado=6.0.2
 traitlets=4.3.2
 wcwidth=0.1.7
-werkzeug=0.15.2
 wheel=0.33.1
 xz=5.2.4
 yaml=0.1.7

@@ -93,11 +93,9 @@ dependencies:
   - tornado=6.0.2=py37h01d97ff_0
   - traitlets=4.3.2=py37_1000
   - wcwidth=0.1.7=py_1
-  - werkzeug=0.15.2=py_0
   - wheel=0.33.1=py37_0
   - xz=5.2.4=h1de35cc_4
   - yaml=0.1.7=h1de35cc_1001
   - zeromq=4.3.1=h0a44026_1000
   - zlib=1.2.11=h1de35cc_3
 prefix: /Users/anreed/anaconda3/envs/phish-modeling
-
