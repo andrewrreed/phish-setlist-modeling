@@ -122,9 +122,9 @@ logs4*
 data/*
 models/*
 
+
 # raw data
 raw/*
 
 # .DS_store
 .DS_Store
-
